@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import './globals.css'
 
 const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -36,7 +37,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${_inter.variable} ${_jetbrainsMono.variable} font-sans antialiased`}>
+        <TooltipProvider delayDuration={200}>
         {children}
+         </TooltipProvider>
         <Analytics />
       </body>
     </html>

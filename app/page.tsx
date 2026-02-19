@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import Link from "next/link"
 import { AppSidebar } from "@/components/app-sidebar"
 import { RuleListPanel } from "@/components/rule-list-panel"
 import { RuleDetailPanel, DEFAULT_RULE_TEMPLATE } from "@/components/rule-detail-panel"
@@ -8,6 +9,7 @@ import { RuleEmptyState } from "@/components/rule-empty-state"
 import type { Rule } from "@/lib/types"
 import { SAMPLE_RULES } from "@/lib/types"
 import { toast, Toaster } from "sonner"
+import { Smartphone } from "lucide-react"
 
 function createNewRule(): Rule {
   return {
@@ -154,6 +156,14 @@ export default function OpportunityCountSettingPage() {
           )}
         </div>
       </div>
+         {/* Device Preview FAB */}
+      <Link
+        href="/device-preview"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-sm font-medium text-background shadow-lg hover:bg-foreground/90 transition-all"
+      >
+        <Smartphone className="size-4" />
+        Device Preview
+      </Link>
 
       <Toaster position="bottom-right" theme="light" />
     </div>

@@ -85,7 +85,7 @@ function FieldLabel({
 }: {
   htmlFor?: string
   label: string
-  tooltip?: string
+  tooltip?: React.ReactNode
 }) {
   return (
     <div className="flex items-center gap-1.5">
@@ -97,7 +97,7 @@ function FieldLabel({
           <TooltipTrigger asChild>
             <Info className="size-3.5 text-muted-foreground cursor-help" />
           </TooltipTrigger>
-          <TooltipContent className="max-w-[240px]">{tooltip}</TooltipContent>
+          <TooltipContent className="max-w-[380px]">{tooltip}</TooltipContent>
         </Tooltip>
       )}
     </div>
@@ -290,7 +290,12 @@ export function RuleDetailPanel({
               <div className="flex flex-col gap-1.5">
                 <FieldLabel
                   label="Triggering Tasks"
-                  tooltip="Which tasks (e.g. Picking) trigger this count"
+                  tooltip={
+                    <div className="flex flex-col gap-1 whitespace-nowrap">
+                      <span>• Pick/Move/Replen: Trigger AFTER Pull (Source)</span>
+                      <span>• Putaway: Trigger BEFORE Drop (Target)</span>
+                    </div>
+                  }
                 />
                 <MultiTagSelect
                   options={TASK_TYPES}
@@ -413,7 +418,7 @@ export function RuleDetailPanel({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">
-                        Exception Trigger (Multiple Select, at least one)
+                        Exception Trigger (Select at least one)
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         Trigger when operator reports a shortage
