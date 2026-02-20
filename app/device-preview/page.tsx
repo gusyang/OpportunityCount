@@ -13,15 +13,24 @@ type Tab = "qty-verify" | "blind-count"
 type QtyVerifyVariant = "with-item" | "empty"
 
 const SAMPLE_WITH_ITEM = {
-  location: "H0202",
-  itemName: "test-itemA",
-  qty: 1,
-  uom: "CS",
+  location: "A-01-02",
+  itemName: "Widget-A123 Heavy Duty",
+  qty: 12,
+  uom: "EA/PLT",
 }
 
 const SAMPLE_EMPTY = {
-  location: "H0202",
+  location: "A-01-02",
+  itemName: undefined,
+  qty: 0,
+  uom: "EA/PLT",
 }
+
+const SAMPLE_BLIND_ITEMS = [
+  { itemName: "Widget-A123 Heavy Duty" },
+  { itemName: "Steel Bolt M10x50 (Pack of 50)" },
+  { itemName: "Safety Gloves (Carton)" },
+]
 
 export default function DevicePreviewPage() {
   const [activeTab, setActiveTab] = useState<Tab>("qty-verify")
@@ -75,7 +84,7 @@ export default function DevicePreviewPage() {
 
         {activeTab === "qty-verify" && (
           <div className="flex flex-col items-center gap-6">
-            {/* Variant toggle for Qty Verify */}
+            {/* Variant toggle */}
             <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
               <button
                 onClick={() => setQtyVerifyVariant("with-item")}
@@ -105,22 +114,22 @@ export default function DevicePreviewPage() {
             <AndroidDeviceFrame>
               <QtyVerifyScreen
                 detail={qtyVerifyVariant === "with-item" ? SAMPLE_WITH_ITEM : SAMPLE_EMPTY}
-                onMatch={() => toast.success("MATCH confirmed")}
-                onNotMatch={() => toast.info("NOT MATCH reported")}
-                onSkip={() => toast("Skipped")}
+                onMatch={() => toast.success(qtyVerifyVariant === "with-item" ? "MATCH confirmed" : "EMPTY confirmed")}
+                onNotMatch={() => toast.info(qtyVerifyVariant === "with-item" ? "NOT MATCH reported" : "NOT EMPTY reported")}
+                onSkip={() => toast("Skipped this location")}
                 allowSkip={true}
               />
             </AndroidDeviceFrame>
 
-            {/* Explanation card */}
+            {/* Explanation */}
             <div className="max-w-md w-full bg-card rounded-xl border border-border p-5 mt-2">
               <h3 className="text-sm font-semibold text-foreground mb-2">
-                Qty Verify (Verify Quantity)
+                Qty Verify
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {qtyVerifyVariant === "with-item"
-                  ? "Shows location, item name, quantity and UOM. The operator physically verifies whether the actual inventory matches the system record. They can confirm MATCH, report NOT MATCH, or SKIP."
-                  : "When the system expects the location to be empty, only the location is shown. The operator verifies if the location is truly empty. No item/qty details are displayed."}
+                  ? "Displays location, item, expected quantity and UOM. The operator physically verifies whether actual inventory matches the system record, then confirms MATCH, NOT MATCH, or SKIP."
+                  : "When expected quantity is 0, the operator verifies whether the location is truly empty. Button labels change to EMPTY / NOT EMPTY. No SKIP button is shown."}
               </p>
             </div>
           </div>
@@ -131,22 +140,24 @@ export default function DevicePreviewPage() {
             {/* Device preview */}
             <AndroidDeviceFrame>
               <BlindCountScreen
-                location="H0202"
+                location="A-01-02"
+                initialItems={SAMPLE_BLIND_ITEMS}
                 onSubmit={(items) =>
                   toast.success(`Submitted ${items.length} item(s)`)
                 }
+                onSkip={() => toast("Skipped this location")}
               />
             </AndroidDeviceFrame>
 
-            {/* Explanation card */}
+            {/* Explanation */}
             <div className="max-w-md w-full bg-card rounded-xl border border-border p-5 mt-2">
               <h3 className="text-sm font-semibold text-foreground mb-2">
                 Blind Count
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                The operator sees the location but does not know the expected quantity.
-                They must physically count each item and enter the item name, quantity, and UOM.
-                Multiple items can be added for a single location.
+                The operator sees the location and item names but not expected quantities.
+                They physically count each item and enter the actual quantity with the appropriate UOM.
+                Multiple items can be counted at a single location.
               </p>
             </div>
           </div>

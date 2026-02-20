@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { MapPin, Package, Hash, Ruler, SkipForward } from "lucide-react"
+import { Check, X } from "lucide-react"
 
 interface CountDetail {
   location: string
@@ -27,131 +27,138 @@ export function QtyVerifyScreen({
   allowSkip = true,
 }: QtyVerifyScreenProps) {
   const [pressedBtn, setPressedBtn] = useState<string | null>(null)
-  const isEmpty = !detail.itemName && !detail.qty
+  const isEmpty = !detail.itemName && (!detail.qty || detail.qty === 0)
 
   return (
-    <div className="flex-1 flex flex-col px-4 py-3">
-      {/* Header bar */}
-      <div className="rounded-t-xl bg-[#2a2a4a] px-4 py-3">
-        <h1 className="text-sm font-semibold text-[#e0e0e0] tracking-wide">
-          On-Screen Opportunity Count
+    <div className="flex-1 flex flex-col bg-[#f2f4f7]">
+      {/* Red Banner */}
+      <div className="mx-4 mt-3 rounded-2xl bg-gradient-to-r from-[#d32f2f] to-[#e53935] px-6 py-4 shadow-md">
+        <h1 className="text-center text-lg font-extrabold text-white tracking-wide uppercase">
+          Inventory Verification
         </h1>
       </div>
 
-      {/* Card body */}
-      <div className="flex-1 flex flex-col bg-[#f5f5f0] rounded-b-xl shadow-lg">
-        {/* Count Detail section */}
-        <div className="px-4 pt-4 pb-3">
-          <p className="text-xs font-bold text-[#333] mb-2 uppercase tracking-wider">
-            Count Detail:
-          </p>
+      {/* Detail Card */}
+      <div className="mx-4 mt-4 rounded-2xl bg-white shadow-sm border border-[#e2e6ed] overflow-hidden">
+        {/* Location row */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#eef0f4]">
+          <span className="text-sm text-[#6b7a90] font-medium">Location</span>
+          <span className="text-base font-bold text-[#1c2333] font-mono tracking-wide">
+            {detail.location}
+          </span>
+        </div>
 
-          <div className="flex flex-col gap-2">
-            {/* Location - always shown */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center size-6 rounded bg-[#2a2a4a]/10">
-                <MapPin className="size-3.5 text-[#2a2a4a]" />
-              </div>
-              <span className="text-xs text-[#666]">Location:</span>
-              <span className="text-xs font-semibold text-[#222] font-mono">{detail.location}</span>
-            </div>
+        {/* Item row - always show when not empty */}
+        {!isEmpty && detail.itemName && (
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#eef0f4]">
+            <span className="text-sm text-[#6b7a90] font-medium">Item</span>
+            <span className="text-sm font-bold text-[#1c2333] text-right max-w-[60%]">
+              {detail.itemName}
+            </span>
+          </div>
+        )}
 
-            {/* Item - only when not empty */}
-            {!isEmpty && detail.itemName && (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center size-6 rounded bg-[#2a2a4a]/10">
-                  <Package className="size-3.5 text-[#2a2a4a]" />
-                </div>
-                <span className="text-xs text-[#666]">Item:</span>
-                <span className="text-xs font-semibold text-[#222]">{detail.itemName}</span>
-              </div>
-            )}
-
-            {/* Qty + UOM - only when not empty */}
-            {!isEmpty && detail.qty !== undefined && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center justify-center size-6 rounded bg-[#2a2a4a]/10">
-                    <Hash className="size-3.5 text-[#2a2a4a]" />
-                  </div>
-                  <span className="text-xs text-[#666]">Qty:</span>
-                  <span className="text-xs font-bold text-[#222] font-mono">
-                    {detail.qty} {detail.uom || "EA"}
-                  </span>
-                </div>
-              </div>
-            )}
+        {/* Qty row */}
+        <div className="flex items-center justify-between px-5 py-4">
+          <span className="text-sm text-[#6b7a90] font-medium">Expected Qty</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-4xl font-black text-[#1c2333] tabular-nums leading-none">
+              {isEmpty ? 0 : (detail.qty ?? 0)}
+            </span>
+            <span className="text-lg font-bold text-[#8b96a5] uppercase">
+              {detail.uom || "EA/PLT"}
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Divider */}
-        <div className="mx-4 h-px bg-[#d0d0c8]" />
+      {/* Prompt Section */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-6">
+        {isEmpty ? (
+          <>
+            <p className="text-base text-[#3a4556] text-center leading-relaxed">
+              Location should be{" "}
+              <span className="font-extrabold text-[#d32f2f] uppercase">Empty</span>{" "}
+              now.
+            </p>
+            <p className="text-base font-bold text-[#1c2333] mt-2 text-center">
+              Please confirm
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-[#6b7a90] text-center">
+              Does remaining qty
+            </p>
+            <p className="text-center mt-1">
+              <span className="text-xl font-extrabold text-[#1c2333] uppercase">
+                Match {detail.qty ?? 0}
+              </span>{" "}
+              <span className="text-xl font-bold text-[#8b96a5] uppercase">
+                {detail.uom || "EA/PLT"}
+              </span>
+              <span className="text-xl font-extrabold text-[#1c2333]">?</span>
+            </p>
+            <p className="text-base font-bold text-[#1c2333] mt-2 text-center">
+              Please confirm
+            </p>
+          </>
+        )}
+      </div>
 
-        {/* Message */}
-        <div className="px-4 py-4 flex-1">
-          {isEmpty ? (
-            <p className="text-xs leading-relaxed text-[#444]">
-              Before you drop inventory, the system indicates that the location is
-              empty. Can you please{" "}
-              <span className="text-[#2e7d32] font-semibold">physically verify</span>{" "}
-              and confirm the empty status of the location?
-            </p>
-          ) : (
-            <p className="text-xs leading-relaxed text-[#444]">
-              Before you drop inventory, please physically verify and confirm
-              inventory of the location match system record.
-            </p>
-          )}
+      {/* Action Buttons */}
+      <div className="px-4 pb-3 flex flex-col gap-2.5">
+        {/* Main action row */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onMatch}
+            onPointerDown={() => setPressedBtn("match")}
+            onPointerUp={() => setPressedBtn(null)}
+            onPointerLeave={() => setPressedBtn(null)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl text-base font-extrabold text-white tracking-wide transition-all",
+              "bg-gradient-to-b from-[#2ecc71] to-[#27ae60] shadow-md",
+              "active:scale-[0.97] active:shadow-sm",
+              pressedBtn === "match" && "scale-[0.97] shadow-sm"
+            )}
+          >
+            <Check className="size-5 stroke-[3]" />
+            {isEmpty ? "EMPTY" : "MATCH"}
+          </button>
+          <button
+            onClick={onNotMatch}
+            onPointerDown={() => setPressedBtn("notmatch")}
+            onPointerUp={() => setPressedBtn(null)}
+            onPointerLeave={() => setPressedBtn(null)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl text-base font-extrabold text-white tracking-wide transition-all",
+              "bg-gradient-to-b from-[#e74c3c] to-[#c0392b] shadow-md",
+              "active:scale-[0.97] active:shadow-sm",
+              pressedBtn === "notmatch" && "scale-[0.97] shadow-sm"
+            )}
+          >
+            <X className="size-5 stroke-[3]" />
+            {isEmpty ? "NOT EMPTY" : "NOT MATCH"}
+          </button>
         </div>
 
-        {/* Action buttons */}
-        <div className="px-4 pb-4 flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onNotMatch}
-              onPointerDown={() => setPressedBtn("notmatch")}
-              onPointerUp={() => setPressedBtn(null)}
-              onPointerLeave={() => setPressedBtn(null)}
-              className={cn(
-                "flex-1 py-3 rounded-lg text-sm font-bold tracking-wide transition-all border-2",
-                "bg-[#ffcdd2] border-[#ef5350] text-[#c62828]",
-                pressedBtn === "notmatch" && "scale-95 brightness-90"
-              )}
-            >
-              NOT MATCH
-            </button>
-            <button
-              onClick={onMatch}
-              onPointerDown={() => setPressedBtn("match")}
-              onPointerUp={() => setPressedBtn(null)}
-              onPointerLeave={() => setPressedBtn(null)}
-              className={cn(
-                "flex-1 py-3 rounded-lg text-sm font-bold tracking-wide transition-all border-2",
-                "bg-[#c8e6c9] border-[#66bb6a] text-[#2e7d32]",
-                pressedBtn === "match" && "scale-95 brightness-90"
-              )}
-            >
-              MATCH
-            </button>
-          </div>
-
-          {allowSkip && (
-            <button
-              onClick={onSkip}
-              onPointerDown={() => setPressedBtn("skip")}
-              onPointerUp={() => setPressedBtn(null)}
-              onPointerLeave={() => setPressedBtn(null)}
-              className={cn(
-                "w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all border",
-                "bg-[#e0e0e0]/60 border-[#bdbdbd] text-[#616161] flex items-center justify-center gap-1.5",
-                pressedBtn === "skip" && "scale-95 brightness-90"
-              )}
-            >
-              <SkipForward className="size-3.5" />
-              SKIP
-            </button>
-          )}
-        </div>
+        {/* Skip button */}
+        {allowSkip && (
+          <button
+            onClick={onSkip}
+            onPointerDown={() => setPressedBtn("skip")}
+            onPointerUp={() => setPressedBtn(null)}
+            onPointerLeave={() => setPressedBtn(null)}
+            className={cn(
+              "w-full py-3.5 rounded-2xl text-sm font-bold text-[#6b7a90] tracking-wide transition-all",
+              "bg-[#dfe3ea] shadow-sm",
+              "active:scale-[0.98] active:shadow-none",
+              pressedBtn === "skip" && "scale-[0.98] shadow-none"
+            )}
+          >
+            SKIP
+          </button>
+        )}
       </div>
     </div>
   )
