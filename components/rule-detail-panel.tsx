@@ -596,6 +596,26 @@ export function RuleDetailPanel({
           </Card>
         </div>
       </div>
+
+      {/* Bottom Action Bar */}
+      <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-card">
+        <div>
+          {!isNew && (
+            <Button
+              variant="ghost"
+              onClick={onDelete}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-2"
+            >
+              <Trash2 className="size-4" />
+              Delete Rule
+            </Button>
+          )}
+        </div>
+        <Button onClick={handleSave} className="min-w-[140px] gap-2 shadow-sm">
+          <Save className="size-4" />
+          Save Rule
+        </Button>
+      </div>
     </div>
   )
 }
