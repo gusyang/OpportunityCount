@@ -539,22 +539,24 @@ export function RuleDetailPanel({
 
               {/* Toggle options */}
               <div className="flex flex-col gap-3 pt-1">
-                <div className="flex items-center justify-between py-2 px-3 rounded-lg border border-border bg-background">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      Force Count
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Operator must count immediately
-                    </p>
+                {rule.execution.countMethod !== "blind" && (
+                  <div className="flex items-center justify-between py-2 px-3 rounded-lg border border-border bg-background">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        Self Count
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Operator performs the count immediately
+                      </p>
+                    </div>
+                    <Switch
+                      checked={rule.execution.instantCount}
+                      onCheckedChange={(v) =>
+                        updateExecution("instantCount", v)
+                      }
+                    />
                   </div>
-                  <Switch
-                    checked={rule.execution.instantCount}
-                    onCheckedChange={(v) =>
-                      updateExecution("instantCount", v)
-                    }
-                  />
-                </div>
+                )}
 
                 <div className="flex items-center justify-between py-2 px-3 rounded-lg border border-border bg-background">
                   <div>
